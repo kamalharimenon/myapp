@@ -196,7 +196,7 @@ class _AddOrchidScreenState extends State<AddOrchidScreen> {
                         ? Container(
                             height: 200,
                             width: 200,
-                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             child: const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
