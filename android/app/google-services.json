@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202702308219",
+    "project_id": "orchidkeeper",
+    "storage_bucket": "orchidkeeper.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202702308219:android:bb146fcb73f2870dd633de",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGn6V0mh2gMEltJD5bmY4R4YwWNENa3W0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

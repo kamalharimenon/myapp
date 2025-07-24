@@ -6,8 +6,15 @@ import 'package:provider/provider.dart';
 import 'package:myapp/add_orchid_screen.dart';
 import 'package:myapp/models/orchid_model.dart';
 import 'package:myapp/orchid_detail_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'package:myapp/services/firestore_service.dart'; // Import FirestoreService
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
@@ -31,11 +38,9 @@ GoRouter _createRouter(List<Orchid> orchids) {
             GoRoute(
               path: 'add',
               pageBuilder: (context, state) {
-                final collection = state.extra as List<Orchid>? ?? [];
+                // Pass existing orchids fetched from the stream
                 return CustomTransitionPage<void>(
-                  child: AddOrchidScreen(
-                    existingOrchids: collection,
-                  ),
+                  child: const AddOrchidScreen(), // Pass the data here
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     return FadeTransition(opacity: animation, child: child);
@@ -44,9 +49,12 @@ GoRouter _createRouter(List<Orchid> orchids) {
               },
             ),
             GoRoute(
-              path: 'orchid/:name',
+              path: 'orchid/:id', // Use ID instead of name for navigation
               builder: (BuildContext context, GoRouterState state) {
-                final orchid = state.extra as Orchid;
+                
+                // You'll need to fetch the orchid by ID here or pass it
+                // For now, I'll keep the extra parameter assumption, but this needs refinement
+                final orchid = state.extra as Orchid; // This will need to change
                 return OrchidDetailScreen(orchid: orchid);
               },
             ),
@@ -75,21 +83,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<Orchid> _orchidCollection = [];
-  late final GoRouter _router;
-
-  @override
-  void initState() {
-    super.initState();
-    _router = _createRouter(_orchidCollection);
-  }
-
-  void _addOrchid(Orchid orchid) {
-    setState(() {
-      _orchidCollection.add(orchid);
-      _router.go('/');
-    });
-  }
+  final FirestoreService _firestoreService = FirestoreService(); // Instantiate FirestoreService
 
   @override
   Widget build(BuildContext context) {
@@ -115,13 +109,13 @@ class _MyAppState extends State<MyApp> {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: appTextTheme.labelLarge,
         elevation: 8,
-        shadowColor: primarySeedColor.withOpacity(0.6),
+        shadowColor: primarySeedColor.withAlpha(153),
       ),
     );
 
     final cardTheme = CardThemeData(
       elevation: 8,
-      shadowColor: Colors.black.withOpacity(0.3),
+      shadowColor: Colors.black.withAlpha(77),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     );
@@ -161,7 +155,7 @@ class _MyAppState extends State<MyApp> {
       textTheme: appTextTheme,
       elevatedButtonTheme: elevatedButtonTheme,
       cardTheme: cardTheme.copyWith(
-        shadowColor: primarySeedColor.withOpacity(0.3),
+        shadowColor: primarySeedColor.withAlpha(77),
       ),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -174,15 +168,23 @@ class _MyAppState extends State<MyApp> {
       scaffoldBackgroundColor: const Color(0xFF1C1B1F),
     );
 
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, child) {
-        return MaterialApp.router(
-          routerConfig: _router,
-          title: 'Orchid Keeper',
-          theme: lightTheme,
-          darkTheme: darkTheme,
-          themeMode: themeProvider.themeMode,
-          debugShowCheckedModeBanner: false,
+    // Use a StreamBuilder to listen for changes from Firestore
+    return StreamBuilder<List<Orchid>>(
+      stream: _firestoreService.getOrchids(),
+      builder: (context, snapshot) {
+        List<Orchid> orchids = snapshot.data ?? [];
+        GoRouter router = _createRouter(orchids);
+        return Consumer<ThemeProvider>(
+          builder: (context, themeProvider, child) {
+            return MaterialApp.router(
+              routerConfig: router,
+              title: 'Orchid Keeper',
+              theme: lightTheme,
+              darkTheme: darkTheme,
+              themeMode: themeProvider.themeMode,
+              debugShowCheckedModeBanner: false,
+            );
+          },
         );
       },
     );
@@ -194,11 +196,13 @@ class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.orchidCollection});
 
   void _navigateToAddOrchid(BuildContext context) {
-    context.push('/add', extra: orchidCollection);
+    context.push('/add'); // No longer passing existing orchids
   }
 
   void _navigateToDetail(BuildContext context, Orchid orchid) {
-    context.push('/orchid/${orchid.name}', extra: orchid);
+    // Pass the orchid object directly for now. 
+    // Fetching by ID in the detail screen would be more robust.
+    context.push('/orchid/${orchid.id}', extra: orchid);
   }
 
   @override
@@ -281,7 +285,7 @@ class MyHomePage extends StatelessWidget {
                   color: Theme.of(context)
                       .colorScheme
                       .onSurface
-                      .withOpacity(0.8)),
+                      .withAlpha(204)),
             ),
             const SizedBox(height: 40),
             ElevatedButton.icon(

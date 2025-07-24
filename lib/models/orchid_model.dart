@@ -1,43 +1,34 @@
 import 'dart:typed_data';
 
-enum Health { excellent, good, fair, poor }
-enum LightRequirement { low, medium, high }
-enum TemperatureRequirement { cool, intermediate, warm }
-enum PottingStatus { potted, mounted }
-enum SizeOption { ss, ms, bs } // SS: Small Seedling, MS: Medium Sized, BS: Blooming Size
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Orchid {
-  final String genus;
-  final String name;
-  final Uint8List? photoBytes;
-  final String? photoUrl;
-  final DateTime? purchaseDate;
-  final SizeOption? size;
-  final String? purchasedFrom;
-  final double? cost;
-  final PottingStatus? pottingStatus;
-  final String? media;
-  final String? currentLocation;
-  final Health? health;
-  final DateTime? lastFloweringDate;
-  final LightRequirement? lightRequirement;
-  final TemperatureRequirement? temperatureRequirement;
-  final DateTime? lastRepotDate;
-  final String? wateringSchedule;
-  final DateTime? lastWateredDate;
-  final DateTime? lastDosingDate;
-  final String? fertilizerUsed;
-  final DateTime? lastFungicideDate;
-  final String? fungicideUsed;
-  final DateTime? lastInsecticideDate;
-  final String? insecticideUsed;
-  final String? remarks;
+  String? id;
+  String genus;
+  String name;
+  Uint8List? photoBytes;
+  DateTime? purchaseDate;
+  String? size;
+  String? purchasedFrom;
+  double? cost;
+  String? pottingStatus;
+  String? media;
+  String? currentLocation;
+  String? health;
+  DateTime? lastFloweringDate;
+  String? lightRequirement;
+  String? temperatureRequirement;
+  DateTime? lastRepotDate;
+  String? wateringSchedule;
+  DateTime? lastWateredDate;
+  DateTime? lastDosingDate;
+  String? fertilizerUsed;
 
   Orchid({
+    this.id,
     required this.genus,
     required this.name,
     this.photoBytes,
-    this.photoUrl,
     this.purchaseDate,
     this.size,
     this.purchasedFrom,
@@ -54,10 +45,57 @@ class Orchid {
     this.lastWateredDate,
     this.lastDosingDate,
     this.fertilizerUsed,
-    this.lastFungicideDate,
-    this.fungicideUsed,
-    this.lastInsecticideDate,
-    this.insecticideUsed,
-    this.remarks,
   });
+
+  // Convert an Orchid object into a Map for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'genus': genus,
+      'name': name,
+      'photoBytes': photoBytes != null ? Blob(photoBytes!) : null, // Firestore Blob type
+      'purchaseDate': purchaseDate != null ? Timestamp.fromDate(purchaseDate!) : null,
+      'size': size,
+      'purchasedFrom': purchasedFrom,
+      'cost': cost,
+      'pottingStatus': pottingStatus,
+      'media': media,
+      'currentLocation': currentLocation,
+      'health': health,
+      'lastFloweringDate': lastFloweringDate != null ? Timestamp.fromDate(lastFloweringDate!) : null,
+      'lightRequirement': lightRequirement,
+      'temperatureRequirement': temperatureRequirement,
+      'lastRepotDate': lastRepotDate != null ? Timestamp.fromDate(lastRepotDate!) : null,
+      'wateringSchedule': wateringSchedule,
+      'lastWateredDate': lastWateredDate != null ? Timestamp.fromDate(lastWateredDate!) : null,
+      'lastDosingDate': lastDosingDate != null ? Timestamp.fromDate(lastDosingDate!) : null,
+      'fertilizerUsed': fertilizerUsed,
+    };
+  }
+
+  // Create an Orchid object from a Firestore document snapshot
+  factory Orchid.fromFirestore(DocumentSnapshot doc) {
+    Map data = doc.data() as Map;
+    return Orchid(
+      id: doc.id,
+      genus: data['genus'] ?? '',
+      name: data['name'] ?? '',
+      photoBytes: data['photoBytes'] != null ? (data['photoBytes'] as Blob).bytes : null,
+      purchaseDate: data['purchaseDate'] != null ? (data['purchaseDate'] as Timestamp).toDate() : null,
+      size: data['size'],
+      purchasedFrom: data['purchasedFrom'],
+      cost: data['cost']?.toDouble(),
+      pottingStatus: data['pottingStatus'],
+      media: data['media'],
+      currentLocation: data['currentLocation'],
+      health: data['health'],
+      lastFloweringDate: data['lastFloweringDate'] != null ? (data['lastFloweringDate'] as Timestamp).toDate() : null,
+      lightRequirement: data['lightRequirement'],
+      temperatureRequirement: data['temperatureRequirement'],
+      lastRepotDate: data['lastRepotDate'] != null ? (data['lastRepotDate'] as Timestamp).toDate() : null,
+      wateringSchedule: data['wateringSchedule'],
+      lastWateredDate: data['lastWateredDate'] != null ? (data['lastWateredDate'] as Timestamp).toDate() : null,
+      lastDosingDate: data['lastDosingDate'] != null ? (data['lastDosingDate'] as Timestamp).toDate() : null,
+      fertilizerUsed: data['fertilizerUsed'],
+    );
+  }
 }
