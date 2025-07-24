@@ -84,3 +84,14 @@
 [debug] [2025-07-24T10:07:59.017Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
 [debug] [2025-07-24T10:07:59.017Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
 [debug] [2025-07-24T10:07:59.018Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T10:39:59.032Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
+[debug] [2025-07-24T10:39:59.034Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
+[debug] [2025-07-24T10:39:59.035Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T10:40:09.066Z] Running auto auth
+[debug] [2025-07-24T10:40:09.080Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"flutter"}
+[info] 
+=== Firestore Setup Actuation
+[info] ✔  Wrote firestore.rules 
+[info] ✔  Wrote firestore.indexes.json 
+[info] ✔  Wrote configuration info to firebase.json 
+[info] ✔  Wrote project information to .firebaserc 
